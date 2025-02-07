@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  font-family: 'Roboto', sans-serif;
+}
+
+/*Signup page*/
+.inp{
+  @apply text-white pt-3 flex flex-col;
+} 
+.inpbox{
+  @apply mt-2 p-2 h-12 border rounded text-white hover:border-white;
+  background-color: rgb(20, 19, 19);
+  border-color: rgba(162, 153, 153, 0.781);
+}
+.sfooter{
+  @apply my-5 pt-4;
+  color: rgba(162, 153, 153, 0.781);
+  border-top: 1px solid rgba(162, 153, 153, 0.781);
+}
+ 
+/*Question page*/
+.quesCard{
+  border: 1px solid rgba(162, 153, 153, 0.781);
+}
+.difficulty{
+  @apply px-3 py-2 rounded transition;
+}
+
+/*ide section*/
+.bg{
+  background-color: rgb(20, 19, 19);
+  border-color: rgba(162, 153, 153, 0.781);
+}
