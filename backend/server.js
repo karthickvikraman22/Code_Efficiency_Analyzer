@@ -10,6 +10,7 @@ mongoose.connect(process.env.CONNECTION_STRING)
 
 app.use(cors())
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/',require('./Routes/userRoute'))
 
 const port=process.env.PORT || 3501

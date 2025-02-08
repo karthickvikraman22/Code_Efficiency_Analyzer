@@ -1,39 +1,26 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Signup(){
-    useEffect(()=>{
-        document.body.style.backgroundColor='rgb(20, 19, 19)';
-        return ()=>{
-          document.body.style.backgroundColor='';
-        }
-    },[])
-
     const navigate=useNavigate()
 
-    const [name,setName]=useState("");
-    const [email,setEmail]=useState("");
-    const [code,setCode]=useState("")
-    const [password,setPassword]=useState("");
+    const [userDetails,setUserDetails]=useState({
+      name:"",
+      email:"",
+      password:"",
+      code:"",
+      verify:""
+    })
     const [error,setError]=useState("")
     const [vcbtn,setVcbtn]=useState(true)
-    const [verify,setVerify]=useState("")
-
-    const postData={
-      name,
-      email,
-      password,
-      code,
-      verify
-    }
 
     function handleVerification(){
        setVcbtn(false)
-       axios.post("http://localhost:3500/send-otp",{email})
+       axios.post("http://localhost:3500/send-otp",{ email: userDetails.email })
        .then((response)=>{
-           setVerify(response.data.message)
+            setUserDetails((prev) => ({ ...prev, verify: response.data.message }))
        })
        .catch((err)=>{
             if(err.response){
@@ -42,9 +29,13 @@ export default function Signup(){
        })
     }
 
+    function handleUserDetails(value,name){
+        setUserDetails((prev)=>({...prev,[name]:value}))
+    }
+
     function handleSubmit(e){
       e.preventDefault();
-      axios.post("http://localhost:3500/register",postData)
+      axios.post("http://localhost:3500/register",userDetails)
       .then((response)=>{
             navigate('/login')
       })
@@ -65,7 +56,7 @@ export default function Signup(){
         <div className={`${(error)?"":"mt-10"}`}>
             <div className="inp">
                 <label htmlFor="name">UserName</label>
-                <input type="text" id="name" className="inpbox" onChange={(e)=>{setName(e.target.value)}}></input>
+                <input type="text" id="name" className="inpbox" onChange={(e)=>{handleUserDetails(e.target.value,"name")}}></input>
             </div>
             
             <div className="mt-3 text-white">
@@ -73,17 +64,17 @@ export default function Signup(){
             </div>
             <div className="text-white flex w-full">
                 <div className="w-4/5">
-                    <input type="email" id="email" className="w-full inpbox" onChange={(e)=>{setEmail(e.target.value)}}></input>
+                    <input type="email" id="email" className="w-full inpbox" onChange={(e)=>{handleUserDetails(e.target.value,"email")}}></input>
                 </div>
                 <div className="ml-2 flex flex-col w-1/5">
                   {(vcbtn===true)?<input type="button" value="Verify" onClick={handleVerification} className="mt-2 inpbox text-xs"></input>
-                  :<input type="text" placeholder="code" className="inpbox" value={code} onChange={(e)=>{setCode(e.target.value)}}></input>}
+                  :<input type="text" placeholder="code" className="inpbox" value={userDetails.code} onChange={(e)=>{handleUserDetails(e.target.value,"code")}}></input>}
                 </div>
             </div>
 
             <div className="inp">
                 <label htmlFor="password">Password</label>
-                <input type="password" id="password" className="inpbox" onChange={(e)=>{setPassword(e.target.value)}}></input>
+                <input type="password" id="password" className="inpbox" onChange={(e)=>{handleUserDetails(e.target.value,"password")}}></input>
             </div>
         </div>
 

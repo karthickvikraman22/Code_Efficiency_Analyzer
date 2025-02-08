@@ -22,7 +22,14 @@ function Main(Name,input){
 const run=asyncHandler(async(req,res)=>{
     const {code,testCases}=req.body
     const {id} =req.params
-    const ques=await questionModel.findOne({_id:id})
+    const ques = await questionModel.findOne({ id: Number(id) });
+
+    // Check if question exists
+    if (!ques) {
+        return res.status(404).json({ error: "Question not found" });
+    }
+
+    console.log(ques);
     const filePath = path.join(__dirname, '..', 'Allcodes', `${ques.Name}.java`);
     fs.writeFileSync(filePath,code)
     const results=[]
