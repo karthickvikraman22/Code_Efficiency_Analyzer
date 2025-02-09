@@ -8,8 +8,8 @@ export default function QuestionProvider({children}){
     const[scope,setScope]=useState("Basic")
 
     useEffect(()=>{
-        axios.get("http://localhost:3500/questions")
-        .then((res)=>{setQuestions(res.data[0][scope]); window.scrollTo({top:0,behavior:"smooth"})})
+        axios.get(`http://localhost:3500/${scope}`)
+        .then((res)=>{setQuestions(res.data); window.scrollTo({top:0,behavior:"smooth"})})
         .catch((e)=>(console.log(e)))
     },[scope])
 

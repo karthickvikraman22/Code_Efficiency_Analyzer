@@ -9,14 +9,13 @@ export default function Ide() {
     const [question, setQuestion] = useState({})
     const [code, setCode] = useState("")
     const { id } = useParams()
-    const { scope, questions } = useContext(QuestionContext)
+    const { scope } = useContext(QuestionContext)
 
-    const selectedQuestion = questions.find(q => q.id === Number(id))
-    useEffect(() => {
-        if (selectedQuestion) {
-            setQuestion(selectedQuestion)
-        }
-    }, [selectedQuestion])
+    useEffect(()=>{
+       axios.get(`http://localhost:3500/specific/${scope}/${id}`)
+       .then((res)=>(setQuestion(res.data[0])))
+       .catch((e)=>console.log(e))
+    },[id,scope])
     
     useEffect(() => {
         setCode(`
@@ -43,7 +42,7 @@ public class ${question.Name} {
     const [error, setError] = useState("")
 
     function handleRun() {
-        axios.post(`http://localhost:3500/run/${id}`, { code, testCases })
+        axios.post(`http://localhost:3500/run/${scope}/${id}`, { code, testCases })
             .then((res) => {
                 setOutput(res.data.testResults);
                 setError("")

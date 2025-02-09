@@ -17,4 +17,10 @@ const questionSchema = new mongoose.Schema({
 
 const questionModel = mongoose.model("questions", questionSchema);
 
-module.exports = { questionModel };
+const easyModel = mongoose.model("easy", questionSchema,"easy");
+
+const mediumModel = mongoose.model("medium", questionSchema,"medium");
+
+const hardModel = mongoose.model("hard", questionSchema,"hard");
+
+module.exports = { questionModel,easyModel,mediumModel,hardModel };

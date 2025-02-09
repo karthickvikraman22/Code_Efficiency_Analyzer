@@ -1,13 +1,17 @@
 const express=require('express')
 const router=express.Router()
 const { register , login, sendOtp }=require('../Controllers/userController');
-const {question}  = require('../Controllers/questionController');
+const {question,easy,medium,hard,specific }  = require('../Controllers/questionController');
 const { run } = require('../Controllers/javaController');
 
 router.post('/register', register);
 router.post('/login', login);
-router.get('/questions', question);
 router.post('/send-otp',sendOtp);
-router.post('/run/:id',run)
+router.get('/Basic', question);
+router.get('/Easy', easy);
+router.get('/Medium', medium);
+router.get('/Hard', hard);
+router.get('/specific/:scope/:id', specific);
+router.post('/run/:scope/:id',run)
 
 module.exports=router

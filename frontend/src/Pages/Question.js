@@ -20,7 +20,7 @@ export default function Question() {
                                 <div className="pt-5 text-base text-white">{question.quesDesc}</div>
                             </div>
                             <div className="pt-[50px] w-1/4 relative">
-                                <button type="button" onClick={() => {navigate(`/questions/${question.id}`)}} className="p-2 rounded absolute right-10 bg-green-600 text-white">Solve</button>
+                                <button type="button" onClick={() => {navigate(`/questions/${question._id}`)}} className="p-2 rounded absolute right-10 bg-green-600 text-white">Solve</button>
                             </div>
                         </div>
                     </div>
