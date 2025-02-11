@@ -1,15 +1,16 @@
-import axios from "axios";
-import { useEffect, useState } from "react"
-import { useNavigate,Link } from 'react-router-dom'
+import { useContext, useEffect, useState } from "react"
+import axios from "axios"
+import { Link,useNavigate } from 'react-router-dom'
+import { AuthContext } from "../Context/AuthContext";
 
 export default function Login() {
-    const navigate = useNavigate()
-
+    const navigate=useNavigate() 
+    const { token,setToken } = useContext(AuthContext)
     const [error, setError] = useState("")
-    const [userDetails,setUserDetails]=useState({
-        email:"",
-        password:""
-      })
+    const [userDetails, setUserDetails] = useState({
+        email: "",
+        password: ""
+    })
 
     useEffect(() => {
         document.body.style.backgroundColor = 'rgb(51, 49, 49)';
@@ -18,22 +19,29 @@ export default function Login() {
         }
     }, [])
 
-    function handleUserDetails(value,name){
-        setUserDetails((prev)=>({...prev,[name]:value}))
+    function handleUserDetails(value, name) {
+        setUserDetails((prev) => ({ ...prev, [name]: value }))
     }
- 
+
     function handleSubmit(e) {
         e.preventDefault()
         axios.post("http://localhost:3500/login",userDetails)
-            .then((response) => {
-                navigate('/questions')
-            })
-            .catch((err) => {
-                if (err.response) {
-                    setError(err.response.data.message)
-                }
-            })
+        .then((response) => {
+            localStorage.setItem("token",response.data.token)
+            setToken(response.data.token)
+        })
+        .catch((err) => {
+            if (err.response) {
+                setError(err.response.data.message)
+            }
+        })
     }
+
+    useEffect(() => {
+        if (token) {
+            navigate('/questions');
+        }
+    }, [token,navigate])
 
     return <>
         <div className="bg-black w-[500px] h-screen flex justify-center my-10 rounded">
@@ -45,12 +53,12 @@ export default function Login() {
                 <div className={`${(error) ? "" : "mt-10"}`}>
                     <div className="inp">
                         <label htmlFor="email">Email</label>
-                        <input type="email" id="email" className="inpbox" onChange={(e) => { handleUserDetails(e.target.value,"email") }}></input>
+                        <input type="email" id="email" className="inpbox" onChange={(e) => { handleUserDetails(e.target.value, "email") }}></input>
                     </div>
 
                     <div className="inp">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" className="inpbox" onChange={(e) => { handleUserDetails(e.target.value,"password") }}></input>
+                        <input type="password" id="password" className="inpbox" onChange={(e) => { handleUserDetails(e.target.value, "password") }}></input>
                     </div>
                 </div>
 

@@ -4,7 +4,7 @@ public class q_3 {
     public static String Odd_or_Even(int n){
        // Enter your code here
        if(n%2==0){
-        return "Even;
+        return "Even";
        }
        return "Odd";
     }
