@@ -1,11 +1,11 @@
 const { exec } = require("child_process")
 const asyncHandler = require('express-async-handler')
 const fs = require("fs")
-const path = require('path');
-const { questionModel,easyModel,mediumModel,hardModel } = require("../Models/questionSchema");
-const { console } = require("inspector");
+const path = require('path')
+const { storeModel } = require("../Models/codeSchema")
+const { questionModel,easyModel,mediumModel,hardModel } = require("../Models/questionSchema")
 
-const dirPath = path.join(__dirname, '..', 'Allcodes');
+const dirPath = path.join(__dirname, '..')
 
 function Main(Name, input) {
   return new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ function Main(Name, input) {
 }
 
 const run = asyncHandler(async (req, res) => {
-  const { code, testCases } = req.body
+  const { code, testCases, ques_id } = req.body
   const { scope, id } = req.params
   const modelMap = {
     Basic: questionModel,
@@ -35,25 +35,40 @@ const run = asyncHandler(async (req, res) => {
     Hard: hardModel
   }
   const model = modelMap[scope]
-  const ques = await model.findById(id);
-  const filePath = path.join(__dirname, '..', 'Allcodes', `${ques.Name}.java`);
+  const ques = await model.findById(id)
+
+  let storedCode=await storeModel.findOne({question_id:ques_id})
+  if(storedCode){
+    storedCode.code = code;
+    await storedCode.save();
+  }else{
+    storedCode=await storeModel.create({question_id:ques_id,code:code})
+  }
+
+  const filePath = path.join(__dirname, '..', `${ques.Name}.java`)
   fs.writeFileSync(filePath, code)
   const results = []
   for (const { input, expectedOutput } of testCases) {
     try {
-      const result = await Main(ques.Name, input);
+      const result = await Main(ques.Name, input)
       results.push({
         input,
         expectedOutput,
         passed: result === expectedOutput,
         result: result,
-      });
+      })
     } catch (err) {
-      console.log(err)
       return res.status(400).json({ error: err.details })
     }
   }
-  res.status(201).json({ testResults: results })
+  res.status(201).json({ testResults: results, storedCode })
+  fs.unlink(filePath, (err) => {
+    if (err) console.error(`Error deleting file: ${filePath}`, err);
+  })
+  const classfilePath=path.join(__dirname,'..',`${ques.Name}.class`)
+  fs.unlink(classfilePath, (err) => {
+    if (err) console.error(`Error deleting file: ${classfilePath}`, err);
+  })
 })
 
 module.exports = { run }

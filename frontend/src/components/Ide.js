@@ -1,5 +1,5 @@
 import Editor from '@monaco-editor/react'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState,useCallback } from 'react'
 import axios from 'axios'
 import Navbar from './Navbar'
 import { useParams } from 'react-router-dom'
@@ -9,23 +9,26 @@ export default function Ide() {
     const [question, setQuestion] = useState({})
     const [code, setCode] = useState("")
     const { id } = useParams()
-    const { scope } = useContext(QuestionContext)
+    const { scope, setSolvedIds } = useContext(QuestionContext)
 
-    useEffect(()=>{
-       axios.get(`http://localhost:3500/specific/${scope}/${id}`)
-       .then((res)=>(setQuestion(res.data[0])))
-       .catch((e)=>console.log(e))
-    },[id,scope])
-    
     useEffect(() => {
-        setCode(`
+        axios.get(`http://localhost:3500/specific/${scope}/${id}`)
+            .then((res) => (setQuestion(res.data[0])))
+            .catch((e) => console.log(e))
+    }, [id, scope])
+
+    useEffect(() => {
+        axios.post('http://localhost:3500/api/code',{id:question.id})
+        .then((res)=>{
+            if(res.data.message==="not found"){
+                setCode(`
 
 public class ${question.Name} {
     public static ${question.return} ${question.quesHead}(int n){
-       // Enter your code here
+        // Enter your code here
     }
-    
-
+                        
+                    
     public static void main(String[] args) {
         try {
             int n = Integer.parseInt(args[0]);
@@ -35,22 +38,46 @@ public class ${question.Name} {
         }
     }
 }`)
+            }
+            else{
+                setCode(res.data.code)
+            }
+        })
+        .catch((e)=>{console.log(e)})
+ 
     }, [question])
 
     const testCases = question.testcases
     const [output, setOutput] = useState([])
     const [error, setError] = useState("")
 
+    const handleSolvedQuestion = useCallback(() => {
+        const allTestCasesSolved = output.every((testCase) => testCase.passed === true)
+        if (allTestCasesSolved) {
+          setSolvedIds((prev) => {
+            if (!prev.includes(question.id)) {
+              return [...prev, question.id]
+            }
+            return prev
+          });
+        }
+      }, [output, question.id,setSolvedIds])
+
+      useEffect(() => {
+        if (output.length >= 1) {
+          handleSolvedQuestion()
+        }
+      }, [output, handleSolvedQuestion])
+
     function handleRun() {
-        axios.post(`http://localhost:3500/run/${scope}/${id}`, { code, testCases })
+        axios.post(`http://localhost:3500/run/${scope}/${id}`, { code, testCases, ques_id:question.id })
             .then((res) => {
-                setOutput(res.data.testResults);
+                setOutput(res.data.testResults)
                 setError("")
             })
             .catch((err) => {
-                console.log(err.response.data)
-                const errorMessage = err.response ? err.response.data.error : err.message;
-                setError(errorMessage);
+                const errorMessage = err.response ? err.response.data.error : err.message
+                setError(errorMessage)
             })
     }
 

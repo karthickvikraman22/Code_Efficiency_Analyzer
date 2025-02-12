@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const questionSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
@@ -15,12 +15,12 @@ const questionSchema = new mongoose.Schema({
     ]
 });
 
-const questionModel = mongoose.model("questions", questionSchema);
+const questionModel = mongoose.model("questions", questionSchema)
 
-const easyModel = mongoose.model("easy", questionSchema,"easy");
+const easyModel = mongoose.model("easy", questionSchema,"easy")
 
-const mediumModel = mongoose.model("medium", questionSchema,"medium");
+const mediumModel = mongoose.model("medium", questionSchema,"medium")
 
-const hardModel = mongoose.model("hard", questionSchema,"hard");
+const hardModel = mongoose.model("hard", questionSchema,"hard")
 
-module.exports = { questionModel,easyModel,mediumModel,hardModel };
+module.exports = { questionModel,easyModel,mediumModel,hardModel }

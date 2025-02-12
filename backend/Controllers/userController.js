@@ -46,8 +46,8 @@ const login=asyncHandler(async(req,res)=>{
     const token=jwt.sign({user:user._id},process.env.SECRET_KEY)
     res.status(200).json({
         token:token,
-        message: 'Login successful'
-    });
+        user:user
+    })
 })
 
 const sendOtp=asyncHandler(async(req,res)=>{

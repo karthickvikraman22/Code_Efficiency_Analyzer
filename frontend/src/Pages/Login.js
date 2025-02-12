@@ -5,7 +5,7 @@ import { AuthContext } from "../Context/AuthContext";
 
 export default function Login() {
     const navigate=useNavigate() 
-    const { token,setToken } = useContext(AuthContext)
+    const { token,setToken, setUser } = useContext(AuthContext)
     const [error, setError] = useState("")
     const [userDetails, setUserDetails] = useState({
         email: "",
@@ -28,7 +28,12 @@ export default function Login() {
         axios.post("http://localhost:3500/login",userDetails)
         .then((response) => {
             localStorage.setItem("token",response.data.token)
+            localStorage.setItem("user", JSON.stringify(response.data.user))
             setToken(response.data.token)
+            setUser({
+                name:response.data.user.name,
+                email:response.data.user.email
+            })
         })
         .catch((err) => {
             if (err.response) {
