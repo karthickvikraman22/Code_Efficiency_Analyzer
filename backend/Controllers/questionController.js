@@ -1,8 +1,8 @@
 const asyncHandler = require('express-async-handler')
 const { questionModel, easyModel, mediumModel, hardModel } = require('../Models/questionSchema')
-const jwt=require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
-const isauth = (req, res, next)=>{
+const isauth = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1]
     if (!token) return res.status(401).json({ message: "Access denied" })
     try {
@@ -20,7 +20,7 @@ const question = asyncHandler(async (req, res) => {
 })
 
 const easy = asyncHandler(async (req, res) => {
-    const userid=req.user
+    const userid = req.user
     const data = await easyModel.find()
     res.status(200).json(data)
 })
@@ -53,4 +53,4 @@ const specific = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { question, easy, medium, hard, specific,isauth }
+module.exports = { question, easy, medium, hard, specific, isauth }

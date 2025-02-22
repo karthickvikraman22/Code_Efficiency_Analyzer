@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    return <>
+    return (
         <div className="flex flex-col w-full items-center">
             <div className="flex w-full p-1 bg-green-500 fixed">
                 <h1 className="ml-5 mr-10 font-bold pt-1.5">Code Efficiency Analyzer</h1>
-                <button onClick={() => { navigate('/register') }} className="px-3 py-2 hover:bg-green-400 rounded transition">Sign up</button>
-                <button onClick={() => { navigate('/login') }} className="px-3 py-2 hover:bg-green-400 rounded transition">Login</button>
+                <button onClick={() => navigate('/register')} className="px-3 py-2 hover:bg-green-400 rounded transition">Sign up</button>
+                <button onClick={() => navigate('/login')} className="px-3 py-2 hover:bg-green-400 rounded transition">Login</button>
             </div>
 
             <div className="mt-28 w-[700px] flex justify-center">
@@ -18,5 +18,5 @@ export default function Home() {
                 </div>
             </div>
         </div>
-    </>
+    );
 }

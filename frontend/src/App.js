@@ -4,7 +4,7 @@ import Signup from './Pages/Signup';
 import Home from './Pages/Home';
 import Question from './Pages/Question';
 import { Routes, Route } from 'react-router-dom';
-import Ide from './components/Ide';
+import Ide from './Pages/Ide';
 
 function App() {
   return (

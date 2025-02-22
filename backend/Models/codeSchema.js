@@ -1,10 +1,13 @@
-const mongoose=require('mongoose')
+const mongoose = require('mongoose')
 
-const storeSchema=new mongoose.Schema({
-    question_id:{type:Number},
-    code:{type:String}
-})
+const storeSchema = new mongoose.Schema({
+    user_id: { type: String },
+    data: [{
+        question_id: { type: String },
+        code: { type: String }
+    }],
+});
 
-const storeModel=mongoose.model("code",storeSchema)
+const storeModel = mongoose.model("code", storeSchema)
 
-module.exports = {storeModel}
+module.exports = { storeModel }

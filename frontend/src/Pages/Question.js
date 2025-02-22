@@ -1,31 +1,24 @@
-import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
-import { QuestionContext } from "../Context/QuestionContext"
-import Navbar from "../components/Navbar"
+import { useContext } from "react";
+import { QuestionContext } from "../Context/QuestionContext";
+import Navbar from "../components/Navbar";
+import QuestionCard from "../components/QuestionCard";
+import Footer from "../components/Footer";
 
 export default function Question() {
-    const { questions, scope } = useContext(QuestionContext)
-    const navigate=useNavigate()
+    const { questions, scope } = useContext(QuestionContext);
 
-    return <>
-        <Navbar />
-        <div className="flex flex-col">
-            <h1 className="ml-10 mt-20 md-0 text-white font-bold text-2xl">{scope} Questions</h1>
-            <div className="my-5 w-[1000px] min-h-screen flex flex-col items-center">
-                {questions.map((question, index) => (
-                    <div key={index} className="mt-5 px-10 w-full">
-                        <div className="bg-black w-full h-40 flex quesCard">
-                            <div className="p-5 w-3/4">
-                                <div className="text-xl text-green-600">{question.quesHead}</div>
-                                <div className="pt-5 text-base text-white">{question.quesDesc}</div>
-                            </div>
-                            <div className="pt-[50px] w-1/4 relative">
-                                <button type="button" onClick={() => {navigate(`/questions/${question._id}`)}} className="p-2 rounded absolute right-10 bg-green-600 text-white">Solve</button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+    return (
+        <>
+            <Navbar />
+            <div className="w-full flex flex-col items-center">
+                <h1 className="ml-10 mt-20 md-0 text-white font-bold text-2xl">{scope} Questions</h1>
+                <div className="my-5 w-[1000px] min-h-screen flex flex-col">
+                    {questions.map((question, index) => (
+                        <QuestionCard key={index} question={question} scope={scope} />
+                    ))}
+                </div>
+                <Footer />
             </div>
-        </div>
-    </>
+        </>
+    );
 }
