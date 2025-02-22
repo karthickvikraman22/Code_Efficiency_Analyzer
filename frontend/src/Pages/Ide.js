@@ -6,6 +6,7 @@ import { QuestionContext } from '../Context/QuestionContext';
 import { AuthContext } from '../Context/AuthContext';
 import TestResults from "../components/TestResults";
 import CodeEditor from "../components/CodeEditor";
+import QuestionDescription from '../components/QuestionDescription';
 
 export default function Ide() {
     const [question, setQuestion] = useState({});
@@ -46,20 +47,20 @@ export default function Ide() {
                 .then((res) => {
                     if (res.data.message === "not found") {
                         setCode(`
-    class Main {
-        public static ${question.return} ${question.function}(int n){
-            // Enter your code here
-        }
+class Main {
+    public static ${question.return} ${question.function}(int n){
+        // Enter your code here
+    }
         
-        public static void main(String[] args) {
-            try {
-                int n = Integer.parseInt(args[0]);
-                System.out.print(${question.function}(n)); 
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please provide a valid integer.");
-            }
+    public static void main(String[] args) {
+        try {
+            int n = Integer.parseInt(args[0]);
+            System.out.print(${question.function}(n)); 
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please provide a valid integer.");
         }
-    }`);
+    }
+}`);
                     } else {
                         setCode(res.data.code);
                     }
@@ -110,21 +111,7 @@ export default function Ide() {
         <div className="w-full flex flex-col max-h-screen overflow-hidden">
             <Navbar />
             <div className='w-full flex mt-12'>
-                <div className='scrollable ml-5 mt-10 w-[35%] text-black bg-green-500 rounded-sm'>
-                    <p className='mx-3 mt-5 font-extrabold text-2xl wh-col'>{question.quesHeading}</p><br />
-                    <p className='mx-3 text-black'>{question.quesDesc}</p><br />
-                    {
-                        question.testcases?.map((testcase, index) => (
-                            <div key={index} className='mt-5 mx-3'>
-                                <p className='text-xl font-bold'>Example {index + 1}</p>
-                                <div className='mt-2 font-medium'>
-                                    <p className='text-black'>Input: <span className='wh-col'>{Array.isArray(testcase.input) || (typeof testcase.input == "object") ? JSON.stringify(testcase.input) : testcase.input}</span></p>
-                                    <p className='text-black'>Output: <span className='wh-col'>{testcase.expectedOutput}</span></p>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
+                <QuestionDescription question={question} />
                 <div className="mr-5 mt-10 w-[65%] flex flex-col">
                     <CodeEditor
                         code={code}
