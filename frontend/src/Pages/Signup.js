@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Signup() {
         verify: ""
     });
     const [error, setError] = useState("");
+    const [passwordView, setPasswordView] = useState(false);
     const [vcbtn, setVcbtn] = useState(true);
 
     function handleVerification() {
@@ -29,6 +31,15 @@ export default function Signup() {
 
     function handleUserDetails(value, name) {
         setUserDetails((prev) => ({ ...prev, [name]: value }));
+    }
+
+    function handlePassword() {
+        setPasswordView(prev=>!prev);
+        if(!passwordView){
+            document.getElementById('password').type="text";
+        }else{
+            document.getElementById('password').type="password";
+        }
     }
 
     function handleSubmit(e) {
@@ -73,9 +84,13 @@ export default function Signup() {
                     </div>
                 </div>
 
-                <div className="inp">
+                <div className="inp relative">
                     <label htmlFor="password">Password</label>
                     <input type="password" id="password" className="inpbox" onChange={(e) => handleUserDetails(e.target.value, "password")} />
+                    {passwordView ?
+                        <span className="absolute right-4 top-[62%]" onClick={handlePassword}><IoMdEye size={20} /></span> :
+                        <span className="absolute right-4 top-[62%]" onClick={handlePassword}><IoMdEyeOff size={20} /></span>
+                    }
                 </div>
             </div>
 

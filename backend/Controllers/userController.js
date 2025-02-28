@@ -1,10 +1,11 @@
 const asyncHandler = require('express-async-handler')
 const userModel = require('../Models/userSchema')
+const { storeModel } = require("../Models/codeSchema")
 const bcrypt = require('bcrypt')
+const verificationEmail = require('../emailTemplate')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
-const { storeModel } = require("../Models/codeSchema")
 
 const register = asyncHandler(async (req, res) => {
     const { name, email, password, code, verify } = req.body
@@ -47,7 +48,7 @@ const login = asyncHandler(async (req, res) => {
     const token = jwt.sign({ user: user._id }, process.env.SECRET_KEY)
     res.status(200).json({
         token: token,
-        user: { name: user.name, email: user.email, solved: user.solved }
+        user: user.email
     })
 })
 
@@ -58,7 +59,7 @@ const sendOtp = asyncHandler(async (req, res) => {
         return res.status(401).json({ message: "Email already exist" })
     }
 
-    const vtoken = Math.floor(Math.random() * 10000)
+    const vtoken = Math.floor(1000 + Math.random() * 9000);
     const verifyCode = String(vtoken)
 
     const senderAddress = nodemailer.createTransport({
@@ -78,15 +79,7 @@ const sendOtp = asyncHandler(async (req, res) => {
         },
         to: email,
         subject: "Verification code from CEA",
-        html: `
-        <div style="text-align: center; padding: 20px;">
-            <div style="width: 200px; background-color: black; border: 1px solid white; border-radius: 5px; padding: 20px; color: white; font-family: Arial, sans-serif;">
-                <p style="font-size: 16px; font-weight: bold;">Verification Code</p>
-                <p style="font-size: 20px; background-color: lightgreen; color: black; padding: 10px; border-radius: 5px; display: inline-block;">
-                    ${verifyCode}
-                </p>
-            </div>
-        </div>`
+        html: verificationEmail.replace("verificationCode", verifyCode)
     }
     const sendmail = asyncHandler(async (senderAddress, mail) => {
         await senderAddress.sendMail(mail)
@@ -116,4 +109,20 @@ const getUser = asyncHandler(async (req, res) => {
     res.status(200).json({ user: user })
 })
 
-module.exports = { register, login, sendOtp, updateUser, getUser }
+const updateLogo = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        res.status(400).json({ message: "No File Uploaded" });
+    }
+    const url = `http://localhost:3500/Logo/${req.file.filename}`
+    const user = await userModel.findOneAndUpdate(
+        { email: req.params.email },
+        { $set: { logo: url } },
+        { new: true }
+    );
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    return res.status(200).json({ url: url });
+})
+
+module.exports = { register, login, sendOtp, updateUser, getUser, updateLogo }

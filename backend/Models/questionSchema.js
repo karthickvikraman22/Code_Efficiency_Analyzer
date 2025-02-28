@@ -8,11 +8,13 @@ const questionSchema = new mongoose.Schema({
     return: { type: String, required: true },
     testcases: [
         {
+            _id: false,
             input: mongoose.Schema.Types.Mixed,
             expectedOutput: String,
         }
-    ]
-});
+    ],
+    likes: { type: Number }
+}, { versionKey: false })
 
 const questionModel = mongoose.model("questions", questionSchema)
 

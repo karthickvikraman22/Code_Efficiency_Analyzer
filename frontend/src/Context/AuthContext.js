@@ -9,16 +9,18 @@ export default function AuthProvider({ children }) {
     const location = useLocation();
     const [token, setToken] = useState(localStorage.getItem("token") || null);
     const [isAuthReady, setIsAuthReady] = useState(false);
-    const [user, setUser] = useState({ name: "", email: localStorage.getItem("user") || null, solved: 0 });
+    const [user, setUser] = useState({ name: "", email: localStorage.getItem("user") || null, solved: 0, logo: "", liked: [] });
 
     useEffect(() => {
         if (user.email) {
-            axios.get(`http://localhost:3500/user/${user.email}/get`)
+            axios.get(`http://localhost:3500/user/${user.email}/getInfo`)
                 .then((res) => {
                     setUser({
                         name: res.data.user.name,
                         email: res.data.user.email,
-                        solved: res.data.user.solved
+                        solved: res.data.user.solved,
+                        logo: res.data.user.logo,
+                        liked: res.data.user.liked || []
                     })
                 })
                 .catch((e) => console.log(e))
@@ -27,14 +29,14 @@ export default function AuthProvider({ children }) {
 
     const logout = useCallback(() => {
         setToken(null);
-        setUser({ name: "", email: null, solved: 0 });
+        setUser({ name: "", email: null, solved: 0, logo: "" });
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         const publicPages = ["/login", "/register", "/"];
         if (!publicPages.includes(location.pathname)) {
             navigate('/login');
         }
-    }, [navigate,location.pathname])
+    }, [navigate, location.pathname])
 
     const login = useCallback((token, email) => {
         if (!localStorage.getItem("token") || !localStorage.getItem("user")) {

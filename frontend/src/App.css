@@ -43,7 +43,7 @@ body {
 
 .scrollable {
   scrollbar-color: black rgba(255, 255, 255, 0.7);
-  max-height: 500px;
+  max-height: 460px;
   overflow-x: hidden;
   overflow-y: scroll;
 }

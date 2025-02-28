@@ -7,11 +7,14 @@ import { AuthContext } from '../Context/AuthContext';
 import TestResults from "../components/TestResults";
 import CodeEditor from "../components/CodeEditor";
 import QuestionDescription from '../components/QuestionDescription';
+import { TbRefresh } from "react-icons/tb";
+import { Tooltip } from 'react-tooltip';
 
 export default function Ide() {
     const [question, setQuestion] = useState({});
     const [code, setCode] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [isRestored, setIsRestored] = useState(false);
 
     const { id } = useParams();
     const location = useLocation();
@@ -31,18 +34,18 @@ export default function Ide() {
             setScope(scopeFromURL);
         }
 
-        if (loading && isAuthReady) {
+        if (!loading && isAuthReady) {
             axios.get(`http://localhost:3500/specific/${scopeFromURL}/${id}`)
                 .then((res) => {
                     setQuestion(res.data[0]);
-                    setLoading(false);
+                    setLoading(true);
                 })
                 .catch((e) => console.log(e));
         }
     }, [location.search, scope, setScope, id, loading, isAuthReady]);
 
     useEffect(() => {
-        if (!loading && question._id && user.email) {
+        if (loading && question._id && user.email) {
             axios.post('http://localhost:3500/api/code', { question_id: question._id, user_id: user.email })
                 .then((res) => {
                     if (res.data.message === "not found") {
@@ -67,7 +70,7 @@ class Main {
                 })
                 .catch((e) => console.log(e));
         }
-    }, [loading, question, user.email]);
+    }, [loading, question, user.email, isRestored]);
 
     const handleSolvedQuestion = useCallback(() => {
         const allTestCasesSolved = output.every((testCase) => testCase.passed === true);
@@ -99,6 +102,12 @@ class Main {
             });
     }
 
+    function handleRestore() {
+        axios.post("http://localhost:3500/api/restore", { user_id: user.email, question_id: question._id })
+            .then(() => setIsRestored((prev => !prev)))
+            .catch((e) => console.log(e))
+    }
+
     const handleEditorDidMount = (editor) => {
         const lastLine = editor.getModel().getLineCount();
         const lastColumn = editor.getModel().getLineMaxColumn(lastLine);
@@ -110,9 +119,13 @@ class Main {
     return (
         <div className="w-full flex flex-col max-h-screen overflow-hidden">
             <Navbar />
-            <div className='w-full flex mt-12'>
+            <div className='pt-14 w-full text-right'>
+                <span className="inline-flex cursor-pointer mr-5" onClick={handleRestore}><TbRefresh color='white' size={25} data-tooltip-variant="light" data-tooltip-content="Reset to default code" data-tooltip-id="icon-tooltip" /></span>
+                <Tooltip id="icon-tooltip" delayHide={500} />
+            </div>
+            <div className='w-full flex'>
                 <QuestionDescription question={question} />
-                <div className="mr-5 mt-10 w-[65%] flex flex-col">
+                <div className="mr-5 mt-2 w-[65%] flex flex-col">
                     <CodeEditor
                         code={code}
                         onCodeChange={(newValue) => setCode(newValue)}

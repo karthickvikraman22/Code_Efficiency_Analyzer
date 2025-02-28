@@ -17,4 +17,17 @@ const getCode = asyncHandler(async (req, res) => {
    res.status(200).json({ message: "found", code: storedCode.data[questionIndex].code })
 })
 
-module.exports = { getCode }
+const deleteCode = asyncHandler(async (req, res) => {
+   const { user_id, question_id } = req.body;
+   const updatedUser = await storeModel.findOneAndUpdate(
+      { user_id },
+      { $pull: { data: { question_id } } },
+      { new: true }
+   );
+   if (!updatedUser) {
+      return res.status(200).json({ message: "not found" });
+   }
+   return res.status(200).json({ message: "Data deleted successfully" });
+});
+
+module.exports = { getCode, deleteCode }

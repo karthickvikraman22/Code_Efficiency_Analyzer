@@ -2,11 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from "../Context/AuthContext";
+import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 
 export default function Login() {
     const navigate = useNavigate();
     const { token, login } = useContext(AuthContext);
     const [error, setError] = useState("");
+    const [passwordView, setPasswordView] = useState(false);
     const [userDetails, setUserDetails] = useState({
         email: "",
         password: ""
@@ -23,12 +25,21 @@ export default function Login() {
         setUserDetails((prev) => ({ ...prev, [name]: value }));
     }
 
+    function handlePassword() {
+        setPasswordView(prev => !prev);
+        if (!passwordView) {
+            document.getElementById('password').type = "text";
+        } else {
+            document.getElementById('password').type = "password";
+        }
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
         axios.post("http://localhost:3500/login", userDetails)
             .then((response) => {
                 const { token, user } = response.data;
-                login(token, user.email);
+                login(token, user);
                 navigate("/questions");
             })
             .catch((err) => {
@@ -57,9 +68,13 @@ export default function Login() {
                         <input type="email" id="email" className="inpbox" onChange={(e) => handleUserDetails(e.target.value, "email")} />
                     </div>
 
-                    <div className="inp">
+                    <div className="inp relative">
                         <label htmlFor="password">Password</label>
                         <input type="password" id="password" className="inpbox" onChange={(e) => handleUserDetails(e.target.value, "password")} />
+                        {passwordView ?
+                            <span className="absolute right-4 top-[62%]" onClick={handlePassword}><IoMdEye size={20} /></span> :
+                            <span className="absolute right-4 top-[62%]" onClick={handlePassword}><IoMdEyeOff size={20} /></span>
+                        }
                     </div>
                 </div>
 
